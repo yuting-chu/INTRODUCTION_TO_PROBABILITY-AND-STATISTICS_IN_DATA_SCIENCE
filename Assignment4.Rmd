@@ -1,0 +1,36 @@
+---
+title: "Assignment 4"
+author: "D54101039 Yu-Ting Chu"
+date: "2023-11-23"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# MARION DAIRIES
+Last year Marion Dairies decided to enter the yogurt market, and it began cautiously by producing, distributing, and marketing a single flavor—a blueberry-flavored yogurt that it calls Blugurt. The company's initial venture into the yogurt market has been very successful; sales of Blugurt are higher than expected, and consumers’ ratings of the product have a mean of 80 and a standard deviation of 25 on a 100-point scale for which 100 is the most favorable score and zero is the least favorable score. Past experience has also shown Marion Dairies that a consumer who rates one of its products with a score greater than 75 on this scale will consider purchasing the product, and a score of 75 or less indicates that the consumer will not consider purchasing the product.
+Emboldened by the success and popularity of its blueberry-flavored yogurt, Marion Dairies management is now considering the introduction of a second flavor. Marion's marketing department is pressing to extend the product line through the introduction of a strawberry-flavored yogurt that would be called Strawgurt, but senior managers are concerned about whether or not Strawgurt will increase Marion's market share by appealing to potential customers who do not like Blugurt. That is, the goal in offering the new product is to increase Marion's market share rather than cannibalize existing sales of Blugurt. The marketing department has proposed giving tastes of both Blugurt and Strawgurt to a simple random sample of 50 customers and asking each of them to rate the two yogurts on the 100-point scale. If the mean score given to Blugurt by this sample of consumers is 75 or less, Marion's senior management believes the sample can be used to assess whether Strawgurt will appeal to potential customers who do not like Blugurt.
+
+## Managerial Report
+Prepare a managerial report that addresses the following issues.
+
+1. Calculate the probability that the mean score of Blugurt given by the simple random sample of Marion Dairies customers will be 75 or less.
+```{r,echo=FALSE}
+z_value <- (75 - 80) / (25 / sqrt(50))
+probability <- pnorm(z_value)
+probability
+```
+
+2. If the Marketing Department increases the sample size to 150, what is the probability that the mean score of Blugurt given by the simple random sample of Marion Dairies customers will be 75 or less?
+```{r,echo=FALSE}
+z_value <- (75 - 80) / (25 / sqrt(150))
+probability <- pnorm(z_value)
+probability
+```
+
+3. Explain to Marion Dairies senior management why the probability that the mean score of Blugurt given by the simple random sample of Marion Dairies customers will be 75 or less is different for these two sample sizes.
+
+The difference in odds arises from the effect of sample size on the standard error of the mean. As the sample size increases, the standard error decreases, causing the distribution of the sample mean around the population mean to narrow. Therefore, the chance of obtaining a sample mean of 75 or lower increases as the sample size increases.
+
+A larger sample size will reduce the variability in the sample mean and increase Blugurt's chance of achieving an average score of 75 or lower. This change occurs because larger samples provide more reliable estimates of the population mean.

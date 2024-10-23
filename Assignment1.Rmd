@@ -1,0 +1,216 @@
+---
+title: "Assingment 1-D54101039朱郁庭"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+library(knitr)
+library(kableExtra)
+```
+
+Heavenly Chocolates Website Transactions
+=====================
+Column {data-width=400}
+-----------------------------------------------------------------------
+Heavenly Chocolates manufactures and sells quality chocolate products at its plant and retail store located in Saratoga Springs, New York. Two years ago the company developed a website and began selling its products over the Internet. Website sales have exceeded the company’s expectations, and management is now considering strategies to increase sales even further. To learn more about the website customers, a sample of 50 Heavenly Chocolate transactions was selected from the previous month’s sales. Data showing the day of the week each transaction was made, the type of browser the customer used, the time spent on the website, the number of website pages viewed, and the amount spent by each of the 50 customers are contained in the file `Shoppers.xlsx.` A portion of the data are shown in the following table. Heavenly Chocolates would like to use the sample data to determine if online shoppers who spend more time and view more pages also spend more money during their visit to the website. The company would also like to investigate the effect that the day of the week and the type of browser have on sales. 
+
+
+```{r Transactions Data, tidy = TRUE, eval = TRUE}
+library(tidyverse)
+library(readxl)
+Transactions = read_excel("C:/Users/朱郁庭/OneDrive - 國立成功大學 National Cheng Kung University/文件/112大三上/機率與資料導論/Shoppers.xlsx")
+set.seed(29) # 29 is set based on your student id, so the number will be the last 2 digits in your id. 
+Transactions = sample(Transactions, 50, replace=TRUE) #sample 5o
+head(Transactions)
+```
+
+**Managerial Report**
+
+Use the methods of descriptive statistics to learn about the customers who visit the Heavenly Chocolates website. Include the following in your report.  
+  
+1. Graphical and numerical summaries for the length of time the shopper spends on the website, the number of pages viewed, and the mean amount spent per transaction. Discuss what you learn about Heavenly Chocolates’ online shoppers from these numerical summaries.
+
+2. Summarize the frequency, the total dollars spent, and the mean amount spent per transaction for each day of week. What observations can you make about Heavenly Chocolates’ business based on the day of the week?
+
+3. Summarize the frequency, the total dollars spent, and the mean amount spent per transaction for each type of browser. What observations can you make about Heavenly Chocolate’s business based on the type of browser?
+
+4. Develop a scatter diagram and compute the sample correlation coefficient to explore the relationship between the time spent on the website and the dollar amount spent. Use the horizontal axis for the time spent on the website. Discuss your findings.
+
+5. Develop a scatter diagram and compute the sample correlation coefficient to explore the relationship between the number of website pages viewed and the amount spent. Use the horizontal axis for the number of website pages viewed. Discuss your findings.
+
+6. Develop a scatter diagram and compute the sample correlation coefficient to explore the relationship between the time spent on the website and the number of pages viewed. Use the horizontal axis to represent the number of pages viewed. Discuss your findings.
+
+
+Problem 1
+=====================
+Column1 {data-width=400}
+-----------------------------------------------------------------------
+
+### Problem 1 (table)
+
+```{r,echo = FALSE}
+library(readxl)
+Transactions = read_excel("C:/Users/朱郁庭/OneDrive - 國立成功大學 National Cheng Kung University/文件/112大三上/機率與資料導論/Shoppers.xlsx")
+kable(head(Transactions),align = "c") %>%
+ kable_styling(bootstrap_options =  c("striped", "hover", "condensed"), full_width = F, font_size = 14)
+
+shoppingtime = Transactions$'Time (min)'
+data_shopping <- data.frame(unclass(summary(shoppingtime)),check.names = FALSE)
+pagesview = Transactions$"Pages Viewed"
+data_pagesview <- data.frame(unclass(summary(pagesview)),check.names = FALSE)
+amount = Transactions$"Amount Spent ($)"
+data_amount <- data.frame(unclass(summary(amount)),check.names = FALSE)
+data_summary=rbind(t(data_shopping),t(data_pagesview),t(data_amount))
+rownames(data_summary)=c("shoppingtime","pagesview","amount")
+kable(head(data_summary),align = "c") %>%
+ kable_styling(bootstrap_options =  c("striped", "hover", "condensed"), full_width = F,font_size = 14)
+```
+1.Time Spent on the Website (Time (min)):
+The minimum is 4.30 minutes.
+The maximum is 32.90 minutes.
+The median is 11.40 minutes, which suggests that half of the shoppers spend more than this amount of time on the website.
+The mean is 12.81 minutes, indicating that, on average, shoppers spend about 12-13 minutes on the website.
+
+
+2.Number of Pages Viewed (Pages Viewed):
+The minimum is 2.00.
+The maximum is 10.00.
+The median is 4.50, indicating that half of the shoppers view more than 4.50 pages.
+The mean is 4.82, which is close to the median, showing that shoppers tend to view a moderate number of pages.
+
+
+3.Amount Spent per Transaction (Amount Spent ($)):
+The minimum is 17.84 dollars.
+The maximum is 158.51 dollars.
+The median is 62.15 dollars, suggesting that half of the shoppers spend more than this amount.
+The mean is 68.13 dollars, reflecting the average spending per transaction.
+
+   
+Column2 {data-width=300}
+------------------------------
+### Problem 1 (histogram)
+```{r,echo=FALSE}
+hist(shoppingtime)
+hist(pagesview)
+hist(amount)
+```
+
+Problem 2 
+=========================
+
+Column1 {data-width=400}
+-----------------------------------------------------------------------
+
+### Problem 2 (table)
+
+```{r,echo=FALSE,fig.width=7}
+totaldollar <- Transactions$`Amount Spent ($)`
+data_totaldollar <- data.frame(unclass(summary(totaldollar)),check.names = FALSE)
+colnames(data_totaldollar)="totaldollar"
+kable(t(data_totaldollar),align = "c" ) %>%
+  kable_styling(bootstrap_options =  c("striped", "hover", "condensed"), full_width = F,font_size = 14)
+
+data_byday <- group_by(Transactions,Day)%>%
+  summarise(n_day = n() ,mean_spent_day = mean(`Amount Spent ($)`))
+
+kable(data_byday,align = "c" ) %>%
+  kable_styling(bootstrap_options =  c("striped", "hover", "condensed"), full_width = F,font_size = 14)
+  
+```
+Monday has the highest average of spending. Sunday has the lowest average of spending.
+But Friday has the most transactions, Sunday and Thursday have the least transactions. 
+
+Row2 {data-height=300}
+------------------------------
+### Problem 2 (histogram)
+```{r,echo=FALSE}
+hist(totaldollar)
+```
+
+Problem 3
+=========================
+Column {data-width=700}
+---------------------------
+### Problem 3
+
+```{r,echo=FALSE,fig.width=7}
+data_bybrowser <- Transactions%>%
+  group_by(Browser)%>%
+  summarise(n_browser = n() , mean_spent_browser = mean(`Amount Spent ($)`))
+
+kable(data_bybrowser,align = "c")%>%
+  kable_styling(bootstrap_options =  c("striped", "hover", "condensed"), full_width = F,font_size = 14)
+
+```
+Firefox has the highest average of spending. Internet Explorer has the lowest average of spending.
+But more people use Internet Explorer rather than Firefox or other browser.
+
+Problem 4
+============
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Problem4
+
+```{r,echo=FALSE}
+x <- Transactions$`Time (min)`
+y <- Transactions$`Amount Spent ($)`
+
+plot(x,y , main = "scatter diagram 
+     between the time spent and the dollar amount spent",font.main= 4,
+     xlab = "time spent", ylab = "dollar amount spent",
+     pch = 19, frame = FALSE)
+abline(lm(y ~ x, data = Transactions), col = "blue")
+
+```
+
+According to the graph, the more money they spend, the more time people spend on the website.
+
+Problem 5 
+=========================
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Problem5
+
+```{r,echo=FALSE}
+x <- Transactions$`Pages Viewed`
+y <- Transactions$`Amount Spent ($)`
+
+plot(x,y , main = "scatter diagram 
+     between pages viewed and the amount spent",font.main= 4,
+     xlab = "pages viewed", ylab = "dollar amount spent",
+     pch = 19, frame = FALSE)
+abline(lm(y ~ x, data = Transactions), col = "blue")
+
+```
+
+According to the graph, the more pages people viewed, the more money they spend.
+
+Problem 6 
+=========================
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Problem6
+
+```{r,echo=FALSE}
+x <- Transactions$`Pages Viewed`
+y <- Transactions$`Time (min)`
+
+
+plot(x,y , main = "scatter diagram 
+     between the time spent and the pages viewed",font.main= 4,
+     xlab = "pages viewed", ylab = "time spent on the website",
+     pch = 19, frame = FALSE)
+abline(lm(y ~ x, data = Transactions), col = "blue")
+
+```
+
+According to the graph, the more pages people viewed, the more time people spend on the website.

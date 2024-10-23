@@ -1,0 +1,187 @@
+---
+title: "Midterm I"
+author: 朱郁庭 YU-TING CHU D54101039
+date: November 3, 2023
+output:
+  pdf_document: 
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+options(width=55)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 45), tidy = TRUE)
+```
+
+## Descriptive Statistics (30%)
+The movie industry is a competitive business. More than 50 studios produce hundreds of new movies for theater release each year, and the financial success of each movie varies considerably. The opening weekend gross sales (\$ millions), the total gross sales (\$ millions), the number of theaters the movie was shown in, and the number of weeks the movie was in release are common variables used to measure the success of a movie. Data on the top 100 grossing movies released in 2016 (Box Office Mojo website) are contained in the file Movies2016. Table 3.10 shows the data for the first 10 movies in this file.
+
+
+In this test, please use the number digits in your student ID as the random seed to generate the data from `Shoppers.xlsx`. For example, if your id is **H10196029**, then numnber digits is **10196029**. Then please see the following code to generate the data to answer the questions in **Managerial Report**.
+
+```{r Transactions Data, tidy = TRUE, eval = TRUE}
+library(tidyverse)
+library(readxl)
+
+movies2016 = read_excel("C:/Users/朱郁庭/Desktop/movies2016.xlsx") #please modify the path accordingly. 
+set.seed(54101039) # 10196029 is set based on your student id.
+movies2016 = movies2016[sample(1:100, 50, replace=FALSE),] #sample 50 data points
+head(movies2016)
+```
+
+
+## Managerial Report
+Use the numerical methods of descriptive statistics presented in this chapter to learn how these variables contribute to the success of a movie. Include the following in your report:
+
+1. Descriptive statistics for each of the four variables along with a discussion of what the descriptive statistics tell us about the movie industry.
+
+```{r,echo=FALSE}
+library(readxl)
+movies2016 = read_excel("C:/Users/朱郁庭/Desktop/movies2016.xlsx")
+
+Opening_Gross_Sales = movies2016$"Opening Gross Sales ($ million)"
+data_OGS <- data.frame(unclass(summary(Opening_Gross_Sales)),check.names = FALSE)
+Total_Gross_Sales = movies2016$"Total Gross Sales ($ million)"
+data_TGS <- data.frame(unclass(summary(Total_Gross_Sales)),check.names = FALSE)
+Theaters = movies2016$"Number of Theaters"
+data_Theaters <- data.frame(unclass(summary(Theaters)),check.names = FALSE)
+Weeks = movies2016$"Weeks in Release"
+data_Weeks <- data.frame(unclass(summary(Weeks)),check.names = FALSE)
+data_summary=rbind(t(data_OGS),t(data_TGS),t(data_Theaters),t(data_Weeks))
+rownames(data_summary)=c("Opening Gross Sales","Total Gross Sales","Number of Theaters","Weeks in Release")
+print(data_summary)
+```
+
+
+2. What movies, if any, should be considered high-performance outliers? Explain.
+```{r,echo=FALSE}
+outliers <- sapply(movies2016[c("Total Gross Sales ($ million)")], function(x) {
+  Q1 <- quantile(x, 0.25)
+  Q3 <- quantile(x, 0.75)
+  IQR <- Q3 - Q1
+  high_cutoff <- Q3 + 1.5 * IQR
+  x > high_cutoff})
+high_performance_outliers <- movies2016[outliers,]
+print(high_performance_outliers)
+
+```
+These movies total gross sales are outliers. So they should be considered high-performance outliers.
+
+
+
+3. Descriptive statistics showing the relationship between total gross sales and each of the other variables. Discuss.
+```{r,echo=FALSE}
+correlation_matrix <- cor(movies2016[c("Opening Gross Sales ($ million)", "Total Gross Sales ($ million)", "Number of Theaters", "Weeks in Release")])
+print(correlation_matrix)
+```
+1.Total Gross Sales vs. Opening Gross Sales:
+
+The correlation=0.918. This strong positive correlation suggests that there is a significant relationship between the opening weekend performance and the overall success of a movie.
+Movies that perform well in terms of opening gross sales tend to have higher total gross sales. This indicates that a successful opening weekend can be a reliable predictor of a movie's overall performance. High opening gross sales contribute to higher total gross sales.
+
+2.Total Gross Sales vs. Number of Theaters:
+
+The correlation=0.613. This suggests that there is a relationship between the number of theaters a movie is shown in and its overall success, but it's not as strong as the relationship with opening gross sales.
+Movies that are shown in more theaters tend to have higher total gross sales, but other factors, such as the movie's content, marketing, and word of mouth, also play a role in determining its overall performance.
+
+3.Total Gross Sales vs. Weeks in Release:
+
+The correlation=0.474. This indicates a moderate relationship between the duration a movie is in theaters and its total gross sales.
+Movies that stay in theaters for a longer period have the potential to accumulate more total gross sales. However, this relationship is not as strong as the correlation with opening gross sales, suggesting that while the duration in theaters matters, it's not the only factor contributing to success.
+
+# Binomial Distribution (10%)
+
+The probability that a certain kind of component will survive a
+shock test is 1/4 . Find the probability that exactly 2 of the next 5 components tested survive.  
+```{r,echo=FALSE}
+bprob <- dbinom(2, size = 5, prob = 0.25)
+bprob
+```
+
+# Multinomial Distribution (10%)
+According to a genetics theory, a certain cross of guinea pigs
+will result in red, black, and white offspring in the ration
+9:6:3. Find the probability that among 6 offspring 3 will be red,
+2 black, and 1 white.  
+```{r,echo=FALSE}
+probs <- c(9/18, 6/18, 3/18)
+counts <- c(3, 2, 1)
+mprob <- dmultinom(counts, size = 6, prob =probs)
+mprob
+```
+
+# Geometric Distribution (10%)
+
+In a certain manufacturing process it is know that, on the
+average, 1 in every 500 items is defective. What is the probability
+that the **tenth** item inspected is the **first** defective item found?  
+```{r,echo=FALSE}
+gprob <- dgeom(10 - 1, prob = 1/500) * 1/500
+gprob
+```
+
+
+# Negative Binomial (20%)
+
+In an NBA (National Basketball Association) championship series,
+the team who wins four games out of seven will be the winner.
+Suppose that team A has probability 0.7 of wining over B and
+both teams A and B face each other in the championship games.
+ 
+- What is the probability that team A will win the series in five
+    games?  
+```{r,echo=FALSE}
+negative_binomial_A_5_games <- choose(5-1,4-1) * (0.7 ^ 4) * ((1 - 0.7) ^ (5-4))
+negative_binomial_A_5_games
+```
+    
+- What is the probability that team B win the series?  
+```{r,echo=FALSE}
+negative_binomial_B_win <- (1 - 0.7) ^ 4
+negative_binomial_B_win
+```
+
+# Hypergeometric Distribution (10%)
+Suppose we have a lot of 100 items of which 5 are defective. What
+is the probability that in a sample of 5, 1 are defective?  
+```{r,echo=FALSE}
+hypergeometric_prob <- dhyper(1, m = 5, n = 100 - 5, k = 5)
+hypergeometric_prob
+```
+
+# Poisson Distribution (10%)
+The mean number of accidents per month at a certain intersection
+is 4. What is the probability that in any given year 8 accidents will occur at this intersection?  
+```{r,echo=FALSE}
+poisson_prob <- dpois(8, 4 * 12)
+poisson_prob
+```
+
+# Normal Distribution (10%)
+An electrical firm manufactures light bulbs that have a life,
+before burn-out, that is normally distributed with mean equal to
+700 hours and a standard deviation of 50 hours. Find the
+probability that a bulb burns between 600 and 800 hours.  
+```{r,echo=FALSE}
+prob_between <- pnorm(800,mean=700,sd=50)-pnorm(600,mean=700,sd=50)
+prob_between
+```
+
+# Normal Distribution (10%)
+
+The average grade for an exam is 60, and the standard deviation is
+10. If 20% of the class is given A's, and the grades are curved to
+follow a normal distribution what is the lowest possible A and the
+height possible B?  
+```{r,echo=FALSE}
+z_80th_percentile <- qnorm(0.80, mean = 60, sd = 10)
+z_60th_percentile <- qnorm(0.60, mean = 60, sd = 10)
+lowest_A <-60+ z_80th_percentile *10
+highest_B <-60+ z_60th_percentile * 10
+
+lowest_A
+highest_B
+```
+
+

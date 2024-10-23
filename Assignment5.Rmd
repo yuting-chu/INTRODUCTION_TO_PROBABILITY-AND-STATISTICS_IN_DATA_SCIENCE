@@ -1,0 +1,110 @@
+---
+title: "Assignment 5"
+author: "D54101039 Yu-Ting Chu"
+date: "2023-11-23"
+output:
+  pdf_document: 
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# YOUNG PROFESSIONAL MAGAZINE
+Young Professional magazine was developed for a target audience of recent college graduates who are in their first 10 years in a business/professional career. In its two years of publication, the magazine has been fairly successful. Now the publisher is interested in expanding the magazine’s advertising base. Potential advertisers continually ask about the demographics and interests of subscribers to Young Professional. To collect this information, the magazine commissioned a survey to develop a profile of its subscribers. The survey results will be used to help the magazine choose articles of interest and provide ad- vertisers with a profile of subscribers. As a new employee of the magazine, you have been asked to help analyze the survey results.
+Some of the survey questions follow: 
+
+1. What is your age?
+2. Are you: Male or Female
+3. Do you plan to make any real estate purchases in the next two years? Yes No
+4. What is the approximate total value of financial investments, exclusive of your home, owned by you or members of your household?
+5. How many stock/bond/mutual fund transactions have you made in the past year?
+6. Do you have broadband access to the Internet at home? Yes No
+7. Please indicate your total household income last year.
+8. Do you have children? Yes No
+
+The file Professional contains the responses to these questions. 
+
+## Managerial Report
+Prepare a managerial report summarizing the results of the survey. In addition to statistical summaries, discuss how the magazine might use these results to attract advertisers. You might also comment on how the survey results could be used by the magazine’s editors to identify topics that would be of interest to readers. Your report should address the follow- ing issues, but do not limit your analysis to just these areas.
+```{r input, tidy = TRUE, eval = TRUE}
+library(tidyverse)
+library(readxl)
+professional = read_excel("C:/Users/朱郁庭/Desktop/professional.xlsx")
+```
+
+1. Develop appropriate descriptive statistics to summarize the data.
+---
+```{r summary, tidy = TRUE, eval = TRUE}
+continuous_data<-c("Age","Value of Investments ($)","Number of Transactions","Household Income ($)")
+summary(subset(professional, select = continuous_data))
+
+t1<-table(professional$"Graduate Degree?")
+p1<-prop.table(table(professional$"Graduate Degree?"))
+t2<-table(professional$"Real Estate Purchases?")
+p2<-prop.table(table(professional$"Real Estate Purchases?"))
+t3<-table(professional$"Broadband Access?")
+p3<-prop.table(table(professional$"Broadband Access?"))
+t4<-table(professional$"Have Children?")
+p4<-prop.table(table(professional$"Have Children?"))
+
+frame<-data.frame(
+  v1_Frequency = t1,v1_Proportion = p1,
+  v2_Frequency = t2,v2_Proportion = p2,
+  v3_Frequency = t3,v3_Proportion = p3,
+  v4_Frequency = t4,v4_Proportion = p4
+)
+print(frame)
+```
+2. Develop 95% confidence intervals for the mean age and household income of subscribers.
+---
+```{r the mean age and household income of subscribers, tidy = TRUE, eval = TRUE}
+age = professional$"Age"
+t.test(age)
+income = professional$"Household Income ($)"
+t.test(income)
+
+```
+The 95% confidence intervals for the mean age and household income of subscribers are (29.72153,30.50286) and (71079.26,77839.77).
+
+
+3. Develop 95% confidence intervals for the proportion of subscribers who have broad-
+band access at home and the proportion of subscribers who have children.
+---
+```{r proportion, tidy = TRUE, eval = TRUE}
+broadband_yes = sum(professional$"Broadband Access?" == "Yes")
+broadband_no = sum(professional$"Broadband Access?" == "No")
+prop.test(broadband_yes,(broadband_yes+broadband_no))
+
+children_yes = sum(professional$"Have Children?" == "Yes")
+children_no = sum(professional$"Have Children?" == "No")
+prop.test(children_yes,(children_yes+children_no))
+
+
+```
+The 95% confidence intervals for the proportion of subscribers who have broad-
+band access at home and the proportion of subscribers who have children are (0.5753252,0.6710862) and (0.4845521,0.5830908).
+
+4. Would Young Professional be a good advertising outlet for online brokers? Justify your conclusion with statistical data.
+---
+It's a good advertising outlet for online brokers.
+
+1.Financial Investments: Most subscribers have financial investments, with a mean amount of $28,538, and some have substantial investments exceeding $100,000. This indicates a financially active readership interested in investment opportunities.
+
+2.Transactions: The average number of stock, bond, and mutual fund transactions per subscriber is around six per year, with several subscribers engaging in even more transactions. This demonstrates an active interest in financial activities.
+
+3.Broadband Access: A significant proportion (around 62.44%) of subscribers have broadband access at home. This factor increases the likelihood of these subscribers conducting business with an online broker, given the ease of access and use of online services.
+
+
+5. Would this magazine be a good place to advertise for companies selling educational software and computer games for young children?
+---
+Based on the survey results indicating a mean subscriber age of 30.11 years and 53.41% having children, it's reasonable to assume that these subscribers likely have young children. Consequently, this demographic presents a promising target market for companies dealing in educational software and computer games tailored for young kids.
+
+The combination of a relatively young subscriber base and a significant proportion having children aligns well with the audience profile sought by businesses selling educational tools and games for youngsters. This correlation suggests that advertising such products within Young Professional could effectively reach the intended audience and potentially yield positive engagement and interest.
+
+6. Comment on the types of articles you believe would be of interest to readers of Young Professional.
+---
+Articles discussing investment strategies are likely to resonate with a significant portion of the readership. For subscribers considering real estate investments or those interested in architectural insights, content centered around real estate and architecture could be particularly appealing. Given the technological inclinations of the audience, articles focusing on technology advancements and innovations would likely garner attention. Additionally, occasional features on parenting and childcare could also engage a subset of the readership.

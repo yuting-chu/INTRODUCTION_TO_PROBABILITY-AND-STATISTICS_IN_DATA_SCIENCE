@@ -1,0 +1,58 @@
+---
+title: "Assignment2"
+author: "D54101039 YU-TING CHU"
+date: "2023-10-27"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## McNeil’s Auto Mall
+
+Harriet McNeil, proprietor of McNeil’s Auto Mall, believes that it is good business for the atuomobile dealership to have more customers on the lot than can be served because this creates an impression that demand for the automobiles on the lot is high. However, Ms. McNeil also understands that if there are far more customers on the lot than can be served by the salespeople, the dealership may lose sales to customers who become frustrated and leave without making a purchase.
+
+Ms. McNeil is primarily concerned about the staffing of salespeople on the lot on Saturday mornings (8:00 A.M. to noon), which are the busiest time of the week for McNeil’s Auto Mall. On Saturday mornings, an average of 6.8 customers arrive per hour. The customers arrive randomly at a constant rate throughout the morning, and a salesperson spends an average of one hour with a customer. Ms. McNeil’s experience suggests that if there are two more customers on the lot than can be served at any time on a Saturday morning, the automobile dealership achieves the optimal balance of creating an impression of high demand without losing too many customers who become frustrated and leave without making a purchase.
+
+Ms. McNeil now wants to determine how many salespeople to have on the lot on Saturday mornings in order to achieve the goal of having two more customers on the lot than can be served at any time. Ms. McNeil understands that occasionally the number of customers on the lot will exceed the number of salespeople by more than two, and is willing to accept such an occurrence no more than 10% of the time.
+
+## Managerial Report
+
+Ms. McNeil has asked you to determine the number of salespeople to have on the lot on Saturday mornings in order to satisfy the stated criteria. In answering Ms. McNeil’s question, consider the following three quesitons.
+
+1. How is the number of customers who arrive in the lot on a Saturday morning distributed?
+
+The arrival of customers on Saturday morning is random throughout the morning at a constant rate with a mean of $\lambda = 6.8$ per hour. Therefore, the probability of an occurrence is the same for any two intervals of equal length and the occurrence or nonoccurrence in any interval is independent of the occurrence or nonoccurrence in any other interval, and the number of customers who arrive on the lot on a Saturday morning is Poisson distributed.
+
+2. Suppose Ms. McNeil currently uses five salespeople on the lot on Saturday morning. Using the probability distribution you identified in (1), what is the probability that the number of customers who arrive on the lot will exceed the number of salespeople by more than two? Does the current Saturday morning employment strategy satisfy Ms. McNeil’s stated objective? Why or why not?
+
+For $x$ = the number of customers who arrive on the lot on a Saturday morning, we must find $P(x > 7)$. This can be calculated as follows:
+\[
+P(x > 7) = 1 - P(x \leq 7) = 1 - [f(0) + f(1) + \cdots + f(7)]
+\]
+where
+\[
+f(x) = \frac{6.8^xe^{-6.8}}{x!}, x=0, 1, \ldots. 
+\]
+
+We can find the values of $f(0), f(1), \cdots , f(7)$ using this formula or by using R, and so $P(x > 7) = 0.3715$.
+```{r McNeilPoi}
+1-ppois(7, 6.8)
+```
+Ms. McNeil’s current Saturday morning employment strategy does not satisfy her stated objective. The probability that more than seven customers will arrive in one hour far exceeds 0.10.
+
+3.	What is the minimum number of salespeople Ms. McNeil should have on the lot on Saturday mornings to achieve the stated objective?
+
+To answer this question, we calculate the cumulative Poisson probability for every value of $x$ (the number of customers that arrive during a one hour period) until the cumulative probability exceeds 0.90 (that is, until the probability that the number of arrivals exceeds x is less than 0.10). 
+
+```{r McNeilCumPoi}
+cbind(1:15, ppois(1:15, 6.8))
+```
+Ten customers arriving in an hour is the smallest value of $x$ for which the cumulative probability exceeds 0.90 (i.e., it is the smallest value of x for which the probability that the number of arrivals exceeds x is less than 0.10). Therefore, Ms. McNeil should employ eight salespeople on her lot on Saturday mornings to achieve her objective.
+
+

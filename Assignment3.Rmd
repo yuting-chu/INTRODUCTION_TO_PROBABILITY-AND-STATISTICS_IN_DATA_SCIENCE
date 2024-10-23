@@ -1,0 +1,152 @@
+---
+title: "Assignment3"
+author: "D54101039 YU-TING CHU"
+date: "2023-10-27"
+output:
+  pdf_document: 
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Specialty Toys, Inc.
+Specialty Toys, Inc., sells a variety of new and innovative children’s toys. Management learned that the preholiday season is the best time to introduce a new toy, because many families use this time to look for new ideas for December holiday gifts. When Specialty discovers a new toy with good market potential, it chooses an October market entry date.
+In order to get toys in its stores by October, Specialty places one-time orders with its manufacturers in June or July of each year. Demand for children’s toys can be highly volatile. If a new toy catches on, a sense of shortage in the marketplace often increases the demand to high levels and large profits can be realized. However, new toys can also flop, leaving Specialty stuck with high levels of inventory that must be sold at reduced prices. The most important question the company faces is deciding how many units of a new toy should be purchased to meet anticipated sales demand. If too few are purchased, sales will be lost; if too many are purchased, profits will be reduced because of low prices realized in clearance sales.
+
+For the coming season, Specialty plans to introduce a new product called Weather Teddy. This variation of a talking teddy bear is made by a company in Taiwan. When a child presses Teddy’s hand, the bear begins to talk. A built-in barometer selects one of five responses that predict the weather conditions. The responses range from “It looks to be a very nice day! Have fun” to “I think it may rain today. Don’t forget your umbrella.” Tests with the product show that, even though it is not a perfect weather predictor, its predictions are surprisingly good. Several of Specialty’s managers claimed Teddy gave predictions of the weather that were as good as many local television weather forecasters.
+
+As with other products, Specialty faces the decision of how many Weather Teddy units to order for the coming holiday season. Members of the management team suggested order quantities of 15,000, 18,000, 24,000, or 28,000 units. The wide range of order quantities suggested indicates considerable disagreement concerning the market potential. The product management team asks you for an analysis of the stock-out probabilities for various order quantities, an estimate of the profit potential, and to
+help make an order quantity recommendation. Specialty expects to sell Weather Teddy for \$24 based on a cost of \$16 per unit. If inventory remains after the holiday season, Specialty will sell all surplus inventory for \$5 per unit. After reviewing the sales history of similar products, Specialty’s senior sales forecaster predicted an expected demand
+of 20,000 units with a .95 probability that demand would be between 10,000 units and 30,000 units.
+
+## Managerial Report
+Prepare a managerial report that addresses the following issues and recommends an order quantity for the Weather Teddy product.
+
+1. Use the sales forecaster’s prediction to describe a normal probability distribution that can be used to approximate the demand distribution. Sketch the distribution and show its mean and standard deviation.
+
+```{r echo=FALSE, out.width="80%",fig.align='center'}
+x <- seq(20000 - 4 *5102, 20000 + 4 * 5102, length = 1000)
+pdf_values <- dnorm(x, 20000, 5102)
+plot(x, pdf_values, type = "l", lwd = 2)
+polygon(c(10000, seq(10000, 30000, length = 100), 30000), c(0, dnorm(seq(10000, 30000, length = 100), 20000, 5102), 0), col = "skyblue")
+abline(v = 10000, lty = 2, col = "red")
+abline(v = 30000, lty = 2, col = "red")
+text(20000, 0.00003, expression(0.95), col = "black")
+text(5000, 0.00001, expression(0.025), col = "black")
+text(35000, 0.00001, expression(0.025), col = "black")
+
+```
+Normal distribution with a mean $\mu=20000$ and $\sigma = 5102$. 
+
+2. Compute the probability of a stock-out for the order quantities suggested by members of the management team.
+```{r stockout}
+1-pnorm(c(15000, 18000, 24000, 28000), mean=20000, sd=5102)
+```
+
+3. Compute the projected profit for the order quantities suggested by the management team under three scenarios: worst case in which sales = 10,000 units, most likely case in which sales = 20,000 units, and best case in which sales = 30,000 units.
+
+Worst Case (Sales = 10,000 units):
+
+15000:24 * 10000 - 16 * 15000 + 5000 * 5= 25000
+
+18000:24 * 10000 - 16 * 18000 + 8000 * 5 = -8000
+
+24000:24 * 10000 - 16 * 24000 + 14000 * 5 = -74000
+
+28000:24 * 10000 - 16 * 28000 + 18000 * 5 = -118000
+
+Most Likely Case (Sales = 20,000 units):
+
+15000:24 * 15000-16 * 15000 + 0 * 5 = 120000
+
+18000:24 * 18000-16 * 18000 + 0 * 5 = 144000
+
+24000:24 * 20000-16 * 24000 + 4000 * 5 = 116000
+
+28000:24 * 20000-16 * 28000 + 8000 * 5 = 72000
+
+Best Case (Sales = 30,000 units):
+
+15000:24 * 15000-16 * 15000 + 0 * 5 = 120000
+
+18000:24 * 18000-16 * 18000 + 0 * 5 = 144000
+
+24000:24 * 24000-16 * 24000 + 0 * 5 = 192000
+
+28000:24 * 28000-16 * 28000 + 0 * 5 = 224000
+
+4. One of Specialty’s managers felt that the profit potential was so great that the order quantity should have a 70% chance of meeting demand and only a 30% chance of any stock-outs. What quantity would be ordered under this policy, and what is the projected profit under the three sales scenarios?
+
+z=0.52
+Q = 20000 + 0.52 * 5102 = 22653 
+
+projected profit in 10000:24 * 10000 - 16 * 22653 + 12653 * 5 = -59183 
+
+projected profit in 20000:24 * 20000 - 16 * 22653 + 2653 * 5 = 130817
+
+projected profit in 30000:24 * 22653 - 16 * 22653 + 0 * 5 = 181224 
+
+
+5. Provide your own recommendation for an order quantity and note the associated profit projections. Provide a rationale for your recommendation.
+
+My recommendation for an order quantity is 25000.
+
+projected profit in 10000:24 * 10000 - 16 * 25000 + 15000 * 5 = -85000
+
+projected profit in 20000:24 * 20000 - 16 * 25000 + 5000 * 5 = 105000
+
+projected profit in 30000:24 * 25000 - 16 * 25000 + 0 * 5 = 20000
+
+Rationale:
+Expected Demand: The expected demand is 20,000 units. By ordering 25,000 units, we are planning for a slightly higher demand, which provides a buffer against potential spikes in demand.
+
+Profit Potential: Ordering 25,000 units allows us to capture additional profit in the event of higher demand scenarios while minimizing the risk of stock-outs in the worst-case scenario.
+
+
+# Gebhardt Electronics
+Gebhardt Electronics produces a wide variety of transformers that it sells directly to manufacturers of electronics equipment. For one component used in several models of its transformers, Gebhardt uses a 3-foot length of .20 mm diameter solid wire made of pure Oxygen-Free Electronic (OFE) copper. A flaw in the wire reduces its conductivity and increases the likelihood it will break, and this critical component is difficult to reach and repair after a transformer has been constructed. Therefore, Gebhardt wants to use primarily flawless lengths of wire in making this component. The company is willing to accept no more than a 1 in 20 chance that a 3-foot length taken from a spool will be flawless. Gebhardt also occasionally uses smaller pieces of the same wire in the manufacture of other components, so the 3-foot segments to be used for this component are essentially taken randomly from a long spool of .20 mm diameter solid OFE copper wire.
+
+Gebhardt is now considering a new supplier for copper wire. This supplier claims that its spools of .20 mm diameter solid OFE copper wire average 50 inches between flaws. Gebhardt now must determine whether the new supply will be satisfactory if the supplier’s claim is valid.
+
+## Managerial Report
+In making this assessment for Gebhardt Electronics, consider the following three questions:
+
+1. If the new supplier does provide spools fo .20 mm solid OFE copper wire that average 50 inches between flaws, how is the length of wire between two consecutive flaws distributed?
+
+f(x)=(1/50) * e^(-x/50) for x>=0
+
+
+2. Using the probability distribution you identified in (1), what is the probability that Gebhardt’s criteria will be met (i.e., a 1 in 20 chance that a randomly selected 3-foot segment of wire provided by the new supplier will be flawless)?
+
+P(x<=36) = 1-e^(-36/50) = 0.5132
+
+P(x>36) = 1-0.5132 = 0.4868
+
+Because 0.4868 > 0.05,Gebhardt’s criteria will not be met by the new supplier. 
+
+
+3. In inches, what is the minimum mean length between consecutive flaws that would result in satisfaction of Gebhardt’s criteria?
+
+1-e^(-36/x) = 0.05
+
+e^(-36/x) = 0.95
+
+x = 702
+
+1-P(x<=36) = 1-(1-e^(-36/702)) = e^(-36/702) = 0.9500
+
+
+4. In inches, what is the minimum mean length between consecutive flaws that would result in a 1 in 100 chance that a randomly selected 3-foot segment of wire provided by the new supplier will be flawless?
+
+1-e^(-36/x) = 0.01
+
+e^(-36/x) = 0.99
+
+x = 3582
+
+1-P(x<=36) = 1-(1-e^(-36/3582)) = e^(-36/3582) = 0.9900

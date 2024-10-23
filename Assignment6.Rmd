@@ -1,0 +1,83 @@
+---
+title: "Assignment 6"
+author: "D54101039 Yu-Ting Chu"
+date: "2023-12-14"
+output:
+  pdf_document: 
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QUALITY ASSOCIATES, INC.
+Quality Associates, Inc., a consulting firm, advises its clients about sampling and statistical procedures that can be used to control their manufacturing processes. In one particular application, a client gave Quality Associates a sample of 800 observations taken during a time in which that client’s process was operating satisfactorily. The sample standard deviation for these data was .21; hence, with so much data, the popu- lation standard deviation was assumed to be .21. Quality Associates then suggested that random samples of size 30 be taken periodically to monitor the process on an ongoing basis. By analyzing the new samples, the client could quickly learn whether the process was operating satisfactorily. When the process was not operating satisfactorily, correct- ive action could be taken to eliminate the problem. The design specification indicated the mean for the process should be 12. The hypothesis test suggested by Quality Associates follows.
+$$
+H_0: \mu = 12 
+$$
+$$
+H_a: \mu \neq 12
+$$
+Corrective action will be taken any time $H_0$ is rejected.
+The following samples were collected at hourly intervals during the first day of operation of the new statistical process control procedure. These data are available in the data set Quality.
+```{r input, tidy = TRUE, eval = TRUE}
+library(tidyverse)
+library(readxl)
+quality = read_excel("C:/Users/朱郁庭/Desktop/quality.xlsx")
+quality
+```
+
+## Managerial Report
+1. Conduct a hypothesis test for each sample at the .01 level of significance and determine what action, if any, should be taken. Provide the test statistic and $p$-value for each test.
+---
+```{r first, tidy = TRUE, eval = TRUE}
+test_stat <- c()
+p_value <- c()
+for(i in colnames(quality)){
+xbar <- mean(quality[[i]])
+s <- sqrt(var(quality[[i]]))
+z <- (xbar - 12) / (s / sqrt(dim(quality)[1]))
+test_stat <- c(test_stat, z)
+if(pnorm(z) > 0.5){
+p_val <- 2 * (1 - pnorm(z))
+}else{
+p_val <- 2 * pnorm(z)
+}
+p_value <- c(p_value, p_val)
+}
+summary_table <- data.frame(rbind(test_stat, p_value))
+colnames(summary_table) <- c("sample 1", "sample 2","sample 3", "sample 4")
+summary_table[3,] <- ifelse(summary_table[2,] < 0.01, "Reject", "Do not reject")
+summary_table
+```
+Only sample 3 reject the H0 hypothesis. Thus, corrective action is warranted for sample 3. The other samples indicate H0 cannot be rejected. Thus, the process is operating satisfactorily. Sample 3 with x = 11.89 shows the process is operating below the desired mean. Sample 4 with x = 12.08 is on the high side, but the p-value of .03 do not reject H0.
+2. Compute the standard deviation for each of the four samples. Does the assumption of .21 for the population standard deviation appear reasonable?
+---
+```{r second, tidy = TRUE, eval = TRUE}
+sample_std <- c()
+for(i in colnames(quality)){
+s <- sqrt(var(quality[[i]]))
+sample_std <- c(sample_std, s)
+}
+sample_std
+```
+All four sample standard deviations are in the 0.20 to 0.22 range. It appears that the process population standard deviation assumption of .21 is good.
+
+3. Compute limits for the sample mean $\overline{x}$ around $\mu= 12$ such that, as long as a new sample mean is within those limits, the process will be considered to be operating satisfactorily. If $\overline{x}$ exceeds the upper limit or if $\overline{x}$ is below the lower limit, corrective action will be taken. These limits are referred to as upper and lower control limits for quality control purposes.
+---
+```{r third, tidy = TRUE, eval = TRUE}
+low_bound <- 12 + qnorm(0.005) * 0.21 / sqrt(dim(quality)[1])
+up_bound <- 12 + qnorm(0.995) * 0.21 / sqrt(dim(quality)[1])
+print(c(low_bound, up_bound))
+
+```
+The upper control limit is 12.0987. The lower control limit is  11.9012. As long as a sample mean x is between these two limits, the process is in control and no corrective action is required. Sample 3 has a mean of 11.89. The sample mean is outside the control limits, so the corrective action is necessary.
+
+4. Discuss the implications of changing the level of significance to a larger value. What mistake or error could increase if the level of significance is increased?
+---
+When the significance level is increased, the likelihood of rejecting the null hypothesis increases. This implies a greater chance of detecting deviations from the expected behavior of the process, which can prompt faster corrective measures when the process is actually out of control.
+
+However, this elevation in the significance level also raises the error probability of stopping a process and taking corrective actions even when the process is operating within acceptable parameters. This situation constitutes a higher risk of committing a Type I error, also known as a false positive. A Type I error occurs when the null hypothesis is incorrectly rejected when it is true.
